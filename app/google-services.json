@@ -1,0 +1,98 @@
+{
+  "project_info": {
+    "project_number": "946394053793",
+    "firebase_url": "https://sadarpurfpschool-19f76-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "sadarpurfpschool-19f76",
+    "storage_bucket": "sadarpurfpschool-19f76.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:946394053793:android:428278c0271c47260bc4e0",
+        "android_client_info": {
+          "package_name": "com.example.myschool"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "946394053793-me02rv71esa858j6q4kb7m4j5ih6gpu8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCSy2rFLcdm-i2NCEEv30Wt2sK3LDqmsjQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "946394053793-me02rv71esa858j6q4kb7m4j5ih6gpu8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:946394053793:android:8c2ac0053848078d0bc4e0",
+        "android_client_info": {
+          "package_name": "com.techpathak.myschool"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "946394053793-me02rv71esa858j6q4kb7m4j5ih6gpu8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCSy2rFLcdm-i2NCEEv30Wt2sK3LDqmsjQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "946394053793-me02rv71esa858j6q4kb7m4j5ih6gpu8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:946394053793:android:d3c0fd4fc7399dc10bc4e0",
+        "android_client_info": {
+          "package_name": "com.techpathak.sadarpurfpschool"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "946394053793-me02rv71esa858j6q4kb7m4j5ih6gpu8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCSy2rFLcdm-i2NCEEv30Wt2sK3LDqmsjQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "946394053793-me02rv71esa858j6q4kb7m4j5ih6gpu8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
