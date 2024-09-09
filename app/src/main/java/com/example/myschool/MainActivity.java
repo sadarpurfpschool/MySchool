@@ -4,7 +4,9 @@ import android.Manifest;
 import android.content.pm.PackageManager;
 import android.media.Image;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.Size;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -19,11 +21,15 @@ import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.media3.common.util.UnstableApi;
 
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import com.google.firebase.database.ValueEventListener;
 import com.google.mlkit.vision.barcode.BarcodeScanner;
 import com.google.mlkit.vision.barcode.BarcodeScanning;
 import com.google.mlkit.vision.barcode.common.Barcode;
@@ -31,8 +37,10 @@ import com.google.mlkit.vision.common.InputImage;
 import com.google.mlkit.vision.barcode.BarcodeScanning;
 import com.google.mlkit.vision.barcode.BarcodeScanner;
 import com.google.mlkit.vision.common.InputImage;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.concurrent.ExecutionException;
 
@@ -41,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
     private DatabaseReference databaseReference;
     private static final int CAMERA_REQUEST_CODE = 101;
 
+    TextView firebaseTextView, sname, sroll, sclass, smobile;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +61,11 @@ public class MainActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+        firebaseTextView = findViewById(R.id.firebaseTextView);
+        sname = findViewById(R.id.sname);
+        sroll = findViewById(R.id.sroll);
+        sclass = findViewById(R.id.sclass);
+        smobile = findViewById(R.id.smobile);
         // Initialize Firebase Realtime Database reference
         databaseReference = FirebaseDatabase.getInstance().getReference("students");
 
@@ -114,6 +128,8 @@ public class MainActivity extends AppCompatActivity {
 
                         if (qrCodeValue != null) {
                             // Mark attendance using the scanned QR code value
+                            firebaseTextView.setText(qrCodeValue);
+                            fetchStudentData();
                             markAttendance(qrCodeValue);
 
                             Toast.makeText(this, "QR Code Scanned: " + qrCodeValue, Toast.LENGTH_SHORT).show();
@@ -130,16 +146,41 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void markAttendance(String qrCodeValue) {
-        String currentDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+        String currentDate = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date());
+        String currentTime = new SimpleDateFormat("hh:mm:ss a", Locale.getDefault()).format(new Date());
+        String status = "Present";
+        DatabaseReference attendanceRef = FirebaseDatabase.getInstance().getReference().child("Attendance").child(currentDate).child(qrCodeValue);
+        attendanceRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                HashMap<String, Object> map = new HashMap<>();
+                map.put("A_Date", currentDate);
+                map.put("B_Time", currentTime);
+                map.put("C_Class", sclass.getText().toString());
+                map.put("D_Roll", sroll.getText().toString());
+                map.put("E_Name", sname.getText().toString());
+                map.put("F_Status",status );
+                attendanceRef.setValue(map) // Directly overwrite the data
+                        .addOnSuccessListener(unused -> {
+                            Toast.makeText(getApplicationContext(), "Attendance marked", Toast.LENGTH_SHORT).show();
 
-        databaseReference.child(qrCodeValue).child("attendance").child(currentDate).setValue("present")
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        Toast.makeText(getApplicationContext(), "Attendance marked", Toast.LENGTH_SHORT).show();
-                    } else {
-                        Toast.makeText(getApplicationContext(), "Failed to mark attendance", Toast.LENGTH_SHORT).show();
-                    }
-                });
+                            /////////////////////////////
+
+                        })
+                        .addOnFailureListener(e -> {
+                            Toast.makeText(getApplicationContext(), "Failed to mark attendance", Toast.LENGTH_SHORT).show();
+
+                        });
+            }
+
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+
     }
 
     @Override
@@ -151,8 +192,48 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "Camera permission is required", Toast.LENGTH_SHORT).show();
         }
     }
-    private void FetchData(){
 
+    private void fetchStudentData() {
+        // Ensure QR value is not null or empty
+        String qrValue = firebaseTextView.getText().toString().trim();
+        if (qrValue.isEmpty()) {
+            Toast.makeText(MainActivity.this, "QR code value is empty.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Reference to the Firebase Database
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance()
+                .getReference("18hq9xwC4BuK2mzgPPMoj2aikGj7b5Wcfw1EfzcBnj9Q")
+                .child("MAIN")
+                .child(qrValue);
+
+        // Attach a ValueEventListener to the database reference
+        databaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                // Get the student data from the snapshot
+                ModelClass student = dataSnapshot.getValue(ModelClass.class);
+
+                // Check if student data is null
+                if (student != null) {
+                    sname.setText(student.getNAME());
+                    sclass.setText(student.getS_CLASS());
+                    sroll.setText(student.getROLL());
+                    smobile.setText(student.getMOBILE());
+                } else {
+                    // If the student is null, notify the user
+                    Toast.makeText(MainActivity.this, "Student data not found.", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                // Log the error and show a Toast to notify the user
+                Log.e("MainActivity", "Failed to load data: " + databaseError.getMessage());
+                Toast.makeText(MainActivity.this, "Failed to load data: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
 }
+

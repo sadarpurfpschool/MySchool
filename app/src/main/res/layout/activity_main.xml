@@ -16,5 +16,34 @@
         android:layout_height="250dp"
    />
 
-
+    <TextView
+        android:id="@+id/firebaseTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Fetching ID..."
+        android:textSize="18sp"/>
+    <TextView
+        android:id="@+id/sname"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Fetching Name..."
+        android:textSize="18sp"/>
+    <TextView
+        android:id="@+id/sclass"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Fetching Class..."
+        android:textSize="18sp"/>
+    <TextView
+        android:id="@+id/sroll"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Fetching Roll..."
+        android:textSize="18sp"/>
+    <TextView
+        android:id="@+id/smobile"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Fetching Mobile..."
+        android:textSize="18sp"/>
 </LinearLayout>
