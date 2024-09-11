@@ -138,7 +138,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-                        Toast.makeText(this, "QR Code Scanned: " + qrCodeValue, Toast.LENGTH_SHORT).show();
+                     //   Toast.makeText(this, "QR Code Scanned: " + qrCodeValue, Toast.LENGTH_SHORT).show();
                             imageProxy.close();  // Close after processing
                             return;  // Stop scanning after the first code
                         }
@@ -169,6 +169,7 @@ public class MainActivity extends AppCompatActivity {
                 attendanceRef.setValue(map) // Directly overwrite the data
                         .addOnSuccessListener(unused -> {
                             showCustomDialog();
+                            firebaseTextView.setText("Scanning...");
                         //    Toast.makeText(getApplicationContext(), "Attendance marked", Toast.LENGTH_SHORT).show();
 
                             /////////////////////////////
@@ -243,7 +244,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
     private void showCustomDialog() {
-        fetchStudentData();
+
 
         String qr_CodeValue = firebaseTextView.getText().toString().trim();
         String qr_sname = sname.getText().toString().trim();
@@ -261,7 +262,7 @@ public class MainActivity extends AppCompatActivity {
                     public void onClick(DialogPlus dialog, View view) {
                         // Handle button clicks inside the dialog
                         if (view.getId() == R.id.dialog_button) {
-
+                            Toast.makeText(getApplicationContext(), "Attendance marked", Toast.LENGTH_SHORT).show();
                             dialog.dismiss(); // Close dialog when OK button is clicked
                         }
                     }
