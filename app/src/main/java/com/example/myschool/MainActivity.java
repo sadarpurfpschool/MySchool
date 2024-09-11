@@ -6,6 +6,9 @@ import android.media.Image;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.Size;
+import android.view.Gravity;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,6 +40,8 @@ import com.google.mlkit.vision.common.InputImage;
 import com.google.mlkit.vision.barcode.BarcodeScanning;
 import com.google.mlkit.vision.barcode.BarcodeScanner;
 import com.google.mlkit.vision.common.InputImage;
+import com.orhanobut.dialogplus.DialogPlus;
+import com.orhanobut.dialogplus.OnClickListener;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -130,9 +135,10 @@ public class MainActivity extends AppCompatActivity {
                             // Mark attendance using the scanned QR code value
                             firebaseTextView.setText(qrCodeValue);
                             fetchStudentData();
-                            markAttendance(qrCodeValue);
 
-                            Toast.makeText(this, "QR Code Scanned: " + qrCodeValue, Toast.LENGTH_SHORT).show();
+
+
+                        Toast.makeText(this, "QR Code Scanned: " + qrCodeValue, Toast.LENGTH_SHORT).show();
                             imageProxy.close();  // Close after processing
                             return;  // Stop scanning after the first code
                         }
@@ -162,7 +168,8 @@ public class MainActivity extends AppCompatActivity {
                 map.put("F_Status",status );
                 attendanceRef.setValue(map) // Directly overwrite the data
                         .addOnSuccessListener(unused -> {
-                            Toast.makeText(getApplicationContext(), "Attendance marked", Toast.LENGTH_SHORT).show();
+                            showCustomDialog();
+                        //    Toast.makeText(getApplicationContext(), "Attendance marked", Toast.LENGTH_SHORT).show();
 
                             /////////////////////////////
 
@@ -220,6 +227,7 @@ public class MainActivity extends AppCompatActivity {
                     sclass.setText(student.getS_CLASS());
                     sroll.setText(student.getROLL());
                     smobile.setText(student.getMOBILE());
+                    markAttendance(qrValue);
                 } else {
                     // If the student is null, notify the user
                     Toast.makeText(MainActivity.this, "Student data not found.", Toast.LENGTH_SHORT).show();
@@ -233,6 +241,46 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(MainActivity.this, "Failed to load data: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
+    }
+    private void showCustomDialog() {
+        fetchStudentData();
+
+        String qr_CodeValue = firebaseTextView.getText().toString().trim();
+        String qr_sname = sname.getText().toString().trim();
+        String qr_sclass = sclass.getText().toString().trim();
+        String qr_sroll = sroll.getText().toString().trim();
+
+        DialogPlus dialog = DialogPlus.newDialog(this)
+                .setGravity(Gravity.CENTER)
+                .setContentHolder(new com.orhanobut.dialogplus.ViewHolder(R.layout.popup_attendance)) // Use the custom layout
+                .setCancelable(true)  // Allow dismissing by touching outside
+                .setExpanded(true)    // Expand the dialog height to full screen
+                .setOnClickListener(new OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogPlus dialog, View view) {
+                        // Handle button clicks inside the dialog
+                        if (view.getId() == R.id.dialog_button) {
+
+                            dialog.dismiss(); // Close dialog when OK button is clicked
+                        }
+                    }
+                })
+                .create();
+
+        // Set the dialog title and button behavior
+        View contentView = dialog.getHolderView();
+        TextView titleTextView = contentView.findViewById(R.id.sname);
+        TextView ssroll = contentView.findViewById(R.id.sroll);
+        TextView ssclass = contentView.findViewById(R.id.sclass);
+        Button okButton = contentView.findViewById(R.id.dialog_button);
+
+        ssroll.setText(qr_sroll);
+        ssclass.setText(qr_sclass);
+        titleTextView.setText(qr_sname);
+        okButton.setText("Ok"); // Set dynamic button text if needed
+
+        dialog.show(); // Show the dialog
     }
 
 }

@@ -59,4 +59,5 @@ dependencies {
 
     // Optional but recommended: CameraX extensions for specific use cases (e.g., HDR, night mode)
     implementation libs.camera.extensions
+    implementation libs.dialogplus
 }
