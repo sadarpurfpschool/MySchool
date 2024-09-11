@@ -6,6 +6,7 @@ import android.media.Image;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.Size;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -134,9 +135,10 @@ public class MainActivity extends AppCompatActivity {
                             // Mark attendance using the scanned QR code value
                             firebaseTextView.setText(qrCodeValue);
                             fetchStudentData();
-                            markAttendance(qrCodeValue);
 
-                            Toast.makeText(this, "QR Code Scanned: " + qrCodeValue, Toast.LENGTH_SHORT).show();
+
+
+                        Toast.makeText(this, "QR Code Scanned: " + qrCodeValue, Toast.LENGTH_SHORT).show();
                             imageProxy.close();  // Close after processing
                             return;  // Stop scanning after the first code
                         }
@@ -166,7 +168,8 @@ public class MainActivity extends AppCompatActivity {
                 map.put("F_Status",status );
                 attendanceRef.setValue(map) // Directly overwrite the data
                         .addOnSuccessListener(unused -> {
-                            Toast.makeText(getApplicationContext(), "Attendance marked", Toast.LENGTH_SHORT).show();
+                            showCustomDialog();
+                        //    Toast.makeText(getApplicationContext(), "Attendance marked", Toast.LENGTH_SHORT).show();
 
                             /////////////////////////////
 
@@ -224,6 +227,7 @@ public class MainActivity extends AppCompatActivity {
                     sclass.setText(student.getS_CLASS());
                     sroll.setText(student.getROLL());
                     smobile.setText(student.getMOBILE());
+                    markAttendance(qrValue);
                 } else {
                     // If the student is null, notify the user
                     Toast.makeText(MainActivity.this, "Student data not found.", Toast.LENGTH_SHORT).show();
@@ -239,9 +243,15 @@ public class MainActivity extends AppCompatActivity {
         });
     }
     private void showCustomDialog() {
+        fetchStudentData();
+
         String qr_CodeValue = firebaseTextView.getText().toString().trim();
+        String qr_sname = sname.getText().toString().trim();
+        String qr_sclass = sclass.getText().toString().trim();
+        String qr_sroll = sroll.getText().toString().trim();
 
         DialogPlus dialog = DialogPlus.newDialog(this)
+                .setGravity(Gravity.CENTER)
                 .setContentHolder(new com.orhanobut.dialogplus.ViewHolder(R.layout.popup_attendance)) // Use the custom layout
                 .setCancelable(true)  // Allow dismissing by touching outside
                 .setExpanded(true)    // Expand the dialog height to full screen
@@ -261,9 +271,13 @@ public class MainActivity extends AppCompatActivity {
         // Set the dialog title and button behavior
         View contentView = dialog.getHolderView();
         TextView titleTextView = contentView.findViewById(R.id.sname);
+        TextView ssroll = contentView.findViewById(R.id.sroll);
+        TextView ssclass = contentView.findViewById(R.id.sclass);
         Button okButton = contentView.findViewById(R.id.dialog_button);
 
-        titleTextView.setText("Custom Dialog Title"); // Set dynamic title if needed
+        ssroll.setText(qr_sroll);
+        ssclass.setText(qr_sclass);
+        titleTextView.setText(qr_sname);
         okButton.setText("Ok"); // Set dynamic button text if needed
 
         dialog.show(); // Show the dialog

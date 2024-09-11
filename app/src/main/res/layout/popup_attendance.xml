@@ -244,7 +244,7 @@
                 android:layout_height="55dp"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="35dp"
-                android:text="Save Record"
+                android:text="Ok"
                 android:textAllCaps="false"
                 android:textColor="#fff" />
 
