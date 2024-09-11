@@ -21,8 +21,8 @@
         android:id="@+id/firebaseTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Fetching ID..."
-        android:textSize="18sp"/>
+        android:text="Scanning..."
+        android:textSize="20sp"/>
     <TextView
         android:visibility="invisible"
         android:id="@+id/sname"
