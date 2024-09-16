@@ -1,9 +1,11 @@
 package com.example.myschool;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.media.Image;
 import android.os.Bundle;
+import android.telephony.SmsManager;
 import android.util.Log;
 import android.util.Size;
 import android.view.Gravity;
@@ -53,7 +55,8 @@ public class MainActivity extends AppCompatActivity {
     private PreviewView previewView;
     private DatabaseReference databaseReference;
     private static final int CAMERA_REQUEST_CODE = 101;
-
+    private static final int SMS_PERMISSION_REQUEST_CODE = 123;
+    private static final String PERMISSION_SEND_SMS = Manifest.permission.SEND_SMS; // Named constant for permission
     TextView firebaseTextView, sname, sroll, sclass, smobile;
 
     @Override
@@ -262,6 +265,7 @@ public class MainActivity extends AppCompatActivity {
                     public void onClick(DialogPlus dialog, View view) {
                         // Handle button clicks inside the dialog
                         if (view.getId() == R.id.dialog_button) {
+                            Chk_sms_permission();
                             Toast.makeText(getApplicationContext(), "Attendance marked", Toast.LENGTH_SHORT).show();
                             dialog.dismiss(); // Close dialog when OK button is clicked
                         }
@@ -283,6 +287,40 @@ public class MainActivity extends AppCompatActivity {
 
         dialog.show(); // Show the dialog
     }
+    private void Chk_sms_permission() {
+        // Check and request SMS permission (using the Activity context)
+
+        if (ContextCompat.checkSelfPermission(this, PERMISSION_SEND_SMS) == PackageManager.PERMISSION_GRANTED) {
+            sendSms(smobile.getText().toString().trim(), constructSmsMessage());
+        } else {
+            ActivityCompat.requestPermissions(this, new String[]{PERMISSION_SEND_SMS}, SMS_PERMISSION_REQUEST_CODE);
+        }
+    }
+    private void sendSms(String phoneNumber, String message) {
+        try {
+            SmsManager smsManager = SmsManager.getDefault();
+            smsManager.sendTextMessage(phoneNumber, null, message, null, null);
+            //  Toast.makeText(itemView.getContext(), "SMS sent successfully", Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            //   Toast.makeText(itemView.getContext(), "Error sending SMS: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private String constructSmsMessage() {
+        String status = "Present";
+        String currentDate = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date());
+        // Customize this to your desired SMS format
+        String message = "Dear Parent/Guardian,\n \n";
+        message += "Attendance update for: " + sname.getText().toString()+ "\n";
+        message += "Class: "+ sclass.getText().toString()+"\n";
+        message += "Roll No: " +sroll.getText().toString() + "\n";
+        message += "Date: " + currentDate+ "\n";
+        message += "Status: " +status + "\n";
+        message += "Regards,\n[Sadarpur FP School]";
+
+        return message;
+    }
+
 
 }
 
